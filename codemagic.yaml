@@ -8,8 +8,6 @@ workflows:
     instance_type: mac_mini_m1
     environment:
       java: 17
-      groups:
-        - google-play-credentials
     scripts:
       - name: Gerar Gradle Wrapper (se ausente)
         script: |
