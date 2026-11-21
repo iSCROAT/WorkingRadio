@@ -78,6 +78,23 @@ O APK de cada build do GitHub Actions fica em **Actions → run → Artifacts �
    - Ícones em relevo → botões circulares com sombra dupla
    - Sliders/toggles táteis → `NeumorphicSlider` / `NeumorphicToggle`
    - Hexágono do protótipo → `NeumorphicHexagon` (`canvas.drawShadow` duplo)
+3. **Globo de estações (v3) — engenharia reversa de protótipo visual**:
+   - Protótipo analisado: globo esférico em **meio-tom** — pontos brancos no oceano,
+     continentes **vazios** (máscara de terra), perspectiva visível pela variação
+     de tamanho/opacidade dos pontos e pela forma achatada na borda.
+   - **Geodados reais** extraídos de [`world-atlas`](https://www.npmjs.com/package/world-atlas)
+     (Natural Earth 110m, domínio público): TopoJSON decodificado (arcos em delta),
+     polígonos rasterizados por scanline par-ímpar em grade equiretangular
+     360×180 e empacotados em **1 bit por célula** → `lib/core/geo/land_mask.dart`
+     (8 KB, sem rede, sem asset binário).
+   - **Projeção ortográfica** implementada em `globe_painter.dart`
+     (`x = cosφ·sinλ`, `y = cosφ₀·sinφ − sinφ₀·cosφ·cosλ`, `z` = profundidade
+     para tamanho/alpha dos pontos e hit-test).
+   - Interação: arrasto gira (lon/lat), pinça altera o raio, tap projeta o toque
+     para trás e seleciona a estação real mais próxima.
+   - Requisito de produto: o card **preserva** nome, país/estado, coordenadas,
+     codec/bitrate, tags e distância da estação — informação nunca é descartada.
+
 3. **Validação futura via APK** — com o APK gerado pelo GitHub Actions:
    ```bash
    rea inspect-android-package app-debug.apk

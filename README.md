@@ -24,6 +24,7 @@ agora em **Flutter** (1 código para Android + iOS futuro).
 | **Radio Ao Vivo** | Hexágono neumórfico + botão play convexo, stream configurável (just_audio), gráfico de **temperatura real por hora** |
 | **Explorar rádios** | **60 mil+ estações do mundo** (Radio Browser): busca por nome, **país**, **estado** e **perto de mim** (GPS real) |
 | **Mapa de estações** | Pontos reais das estações ativas (OpenStreetMap), sua posição, card com play e distância |
+| **Globo de estações** | Globo em meio-tom recriado do protótipo (ENG. REVERSA): arraste para girar, pinça p/ zoom, tap no ponto abre a estação com **local exato preservado** (coordenadas, país, codec, distância, tags) |
 | **Previsão do Tempo** | Card elevado com temperatura real (wttr.in), abas Hoje/Semana, slider de volume, toggle persistido |
 | **Configurações** | Campo físico para URL do stream + cidade, estações, notificações, sobre |
 
@@ -79,7 +80,8 @@ lib/
 ├── main_shell.dart            # Bottom nav neumórfica (3 abas)
 ├── core/
 │   ├── theme/                 # Tokens neumórficos
-│   └── widgets/               # Botões, cards, slider, toggle, hexágono
+│   ├── geo/                   # Globo (projeção ortográfica + máscara de terra)
+│   └── widgets/               # Botões, cards, slider, toggle, hexágono, pílula
 └── features/
     ├── radio/                 # just_audio (stream real)
     ├── stations/              # Radio Browser (catálogo global + mapa)
