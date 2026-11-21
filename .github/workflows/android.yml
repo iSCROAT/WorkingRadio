@@ -44,13 +44,26 @@ jobs:
           set -o pipefail
           flutter build apk --debug 2>&1 | tee /tmp/build.log
 
-      - name: Salvar log do build (diagnóstico)
+      - name: Salvar log do build (artefato)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: build-log
           path: /tmp/build.log
           if-no-files-found: warn
+
+      # Publica o erro como anotação de check-run (visível via API).
+      - name: Anotar diagnóstico da falha
+        if: failure()
+        run: |
+          set +e
+          ERR=$(grep -iE "error:|FAILURE:|What went wrong|Caused by:|e: |Exception:" /tmp/build.log 2>/dev/null | head -n 12)
+          if [ -z "$ERR" ]; then
+            ERR=$(tail -n 25 /tmp/build.log 2>/dev/null)
+          fi
+          # escapa % e quebras de linha para o comando ::error::
+          ESC=$(printf '%s' "$ERR" | sed 's/%/%25/g' | sed ':a;N;$!ba;s/\n/%0A/g')
+          echo "::error title=Build APK falhou::$ESC"
 
       - name: Upload APK (artefato)
         uses: actions/upload-artifact@v4
