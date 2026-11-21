@@ -41,6 +41,20 @@ Guia oficial: https://rea.tools/get-started/
 
 Análise estática de JavaScript/Electron **não** precisa de motor nativo.
 
+## Comandos usados nesta sessão (evidências)
+
+```bash
+rea --version                 # 6.7.0
+rea doctor                    # diagnóstico (motores nativos ausentes; CLI OK)
+rea --help | grep -i flutter  # identify-flutter-build disponível
+rea inspect-android-package app-debug.apk     # validação do APK gerado
+rea identify-flutter-build app-debug.apk      # snapshot Dart + fatos do engine
+rea decode-android-resources app-debug.apk    # manifest/strings do APK
+```
+
+O APK de cada build do GitHub Actions fica em **Actions → run → Artifacts →
+`app-debug`**; baixe e rode os comandos acima para auditar o binário real.
+
 ## Como o REA foi usado neste projeto
 
 ### v1.0.0 — Protótipo "Heart Rate / Heart Limit" → Kotlin nativo

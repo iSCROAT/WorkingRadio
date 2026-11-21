@@ -58,8 +58,11 @@ O workflow [`.github/workflows/android.yml`](.github/workflows/android.yml):
 - **A cada push**: compila o APK debug e publica como **artefato** (`app-debug`)
 - **A cada tag `v*`**: compila o APK release e publica como **Release** no GitHub
 
-Para baixar: aba **Actions** → build → **Artifacts** → `app-debug`.
+Para baixar: aba **Actions** → build mais recente → **Artifacts** → `app-debug` (APK
+debug, ~87 MB — inclui a VM de depuração; o release é bem menor).
 Ou em **Releases** (para tags `v*`).
+
+> **Status:** build ✅ verde — APK Flutter v2.0.0 gerado pelo GitHub Actions.
 
 ---
 
