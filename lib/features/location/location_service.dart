@@ -53,10 +53,8 @@ class LocationService extends ChangeNotifier {
       }
 
       final fix = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.low,
-          timeLimit: Duration(seconds: 20),
-        ),
+        desiredAccuracy: LocationAccuracy.low,
+        timeLimit: const Duration(seconds: 20),
       ).timeout(const Duration(seconds: 25));
       position = fix;
 
