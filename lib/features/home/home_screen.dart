@@ -227,7 +227,9 @@ class _HourlyChart extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: hours.map((h) {
           final isNow = h.time == 'Agora';
-          final barH = (h.tempC / (maxTemp == 0 ? 1 : maxTemp) * 64).clamp(18.0, 64.0);
+          final barH = (h.tempC / (maxTemp == 0 ? 1 : maxTemp) * 64)
+              .clamp(18.0, 64.0)
+              .toDouble();
           return Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/neumorphic_theme.dart';
 import '../../core/widgets/neumorphic.dart';
 import '../radio/radio_service.dart';
+import '../settings/settings_provider.dart';
 import 'weather_service.dart';
 
 /// TELA 2 — Previsão do Tempo (neumorfismo).
@@ -42,7 +43,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     onTap: widget.onBack,
                   ),
                   const SizedBox(width: 12),
-                  const Text('Voltar para configurações',
+                  const Text('Voltar para o início',
                       style: TextStyle(
                           fontSize: 13, color: NeuColors.textSecondary)),
                   const Spacer(),
@@ -57,7 +58,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     NeumorphicButton(
                       icon: Icons.refresh,
                       size: 44,
-                      onTap: () => weather.fetch('Parauna'),
+                      onTap: () => weather.fetch(context.read<SettingsProvider>().city),
                     ),
                 ],
               ),
@@ -96,7 +97,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       NeumorphicButton(
                         icon: Icons.refresh,
                         size: 52,
-                        onTap: () => weather.fetch('Parauna'),
+                        onTap: () => weather.fetch(context.read<SettingsProvider>().city),
                       ),
                     ],
                   ),
@@ -157,9 +158,16 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _Stat(Icons.water_drop, 'Umidade', '${report.humidity}%'),
-                          _Stat(Icons.cloud, 'Vento', '${report.windKmh} km/h ${report.windDir}'),
-                          _Stat(Icons.wb_sunny, 'UV', '${report.uvIndex}'),
+                          Expanded(
+                            child: _Stat(Icons.water_drop, 'Umidade', '${report.humidity}%'),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: _Stat(Icons.air, 'Vento', '${report.windKmh} km/h'),
+                          ),
+                          Expanded(
+                            child: _Stat(Icons.wb_sunny, 'UV', '${report.uvIndex}'),
+                          ),
                         ],
                       ),
                     ],
@@ -178,7 +186,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: report.hourly.map((h) {
-                      return Column(
+                      return Expanded(
+                        child: Column(
                         children: [
                           Text(h.time,
                               style: const TextStyle(
@@ -193,6 +202,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                   fontWeight: FontWeight.w600,
                                   color: NeuColors.textPrimary)),
                         ],
+                        ),
                       );
                     }).toList(),
                   )

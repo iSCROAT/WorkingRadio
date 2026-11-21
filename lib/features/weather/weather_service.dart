@@ -85,14 +85,11 @@ class WeatherService extends ChangeNotifier {
     );
   }
 
+  /// Dia da semana calculado a partir da data real da API (sem valores fixos).
   String _weekday(String date) {
-    const map = {
-      '2026-11-21': 'Sex',
-      '2026-11-22': 'Sáb',
-      '2026-11-23': 'Dom',
-      '2026-11-24': 'Seg',
-      '2026-11-25': 'Ter',
-    };
-    return map[date] ?? date;
+    const names = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+    final parsed = DateTime.tryParse(date);
+    if (parsed == null) return date;
+    return names[parsed.weekday - 1];
   }
 }

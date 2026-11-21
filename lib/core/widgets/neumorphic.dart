@@ -151,7 +151,7 @@ class NeumorphicSlider extends StatelessWidget {
                 ),
                 // Preenchimento
                 FractionallySizedBox(
-                  widthFactor: value.clamp(0.0, 1.0),
+                  widthFactor: value.clamp(0.0, 1.0).toDouble(),
                   child: Container(
                     height: 14,
                     decoration: BoxDecoration(
@@ -162,7 +162,7 @@ class NeumorphicSlider extends StatelessWidget {
                 ),
                 // Polegar convexo
                 Positioned(
-                  left: (value.clamp(0.0, 1.0) * (width - 28)),
+                  left: value.clamp(0.0, 1.0).toDouble() * (width - 28),
                   child: Container(
                     width: 28,
                     height: 28,
