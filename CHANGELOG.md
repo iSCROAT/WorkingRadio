@@ -3,6 +3,27 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 Versionamento: `version` semântico em `pubspec.yaml` (v2+) / `versionName`+`versionCode` (v1).
 
+## [3.0.0] — 2026-11-21
+
+### Adicionado
+- **Rádios globais** via API pública [Radio Browser](https://www.radio-browser.info)
+  (60 mil+ estações, sem chave/cadastro): busca por **nome**, **país** e **estado**,
+  com espelhos de1/de2/at1 e descarte de respostas antigas
+- **Geolocalização real** (`geolocator` + reverse geocoding Nominatim/OSM):
+  botão "perto de mim" lista estações num raio de 100 km por coordenadas
+- **Mapa de estações ativas** (`flutter_map` + tiles OpenStreetMap, sem chave):
+  pontos reais por `geo_lat`/`geo_long`, marcador da sua posição, card da estação
+  selecionada com play direto e distância em km
+- Tela **Explorar rádios**: lista com favicon real, país/estado, codec/bitrate,
+  filtro por país (lista real com contagem de estações) e busca global (top do mundo)
+- Navegação com 4 abas na pílula neumórfica: Início · Explorar · Tempo · Ajustes
+- Permissões `ACCESS_FINE_LOCATION` / `ACCESS_COARSE_LOCATION` no Android
+- Atalho de estações nas Configurações
+
+### Alterado
+- Bootstrap aguarda configurações persistidas antes de montar o shell
+- Toggle de notificações lido do `SettingsProvider` (persistido)
+
 ## [2.0.0] — 2026-11-21
 
 ### Adicionado
