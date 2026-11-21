@@ -13,11 +13,13 @@ import '../weather/weather_service.dart';
 class HomeScreen extends StatefulWidget {
   final VoidCallback onOpenWeather;
   final VoidCallback onOpenSettings;
+  final VoidCallback onOpenStations;
 
   const HomeScreen({
     super.key,
     required this.onOpenWeather,
     required this.onOpenSettings,
+    required this.onOpenStations,
   });
 
   @override
@@ -155,9 +157,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   NeumorphicButton(
-                    icon: Icons.water_drop,
+                    icon: Icons.public,
                     size: 56,
-                    onTap: widget.onOpenWeather,
+                    onTap: widget.onOpenStations,
                   ),
                   NeumorphicButton(
                     icon: Icons.bolt,

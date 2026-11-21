@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../theme/neumorphic_theme.dart';
 
 /// Pílula de navegação inferior do protótipo.
-/// Barra convexa com um hexágono central (embutido) e ações laterais.
+/// Barra convexa com um hexágono central (aba principal) e ações laterais.
 class NeuNavPill extends StatelessWidget {
   final int index;
   final ValueChanged<int> onChanged;
@@ -19,12 +19,17 @@ class NeuNavPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return NeumorphicPill(
-      height: 76,
+      height: 78,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _PillAction(
-            icon: Icons.tune,
+            icon: Icons.public,
+            selected: index == 1,
+            onTap: () => onChanged(1),
+          ),
+          _PillAction(
+            icon: Icons.water_drop,
             selected: index == 2,
             onTap: () => onChanged(2),
           ),
@@ -33,9 +38,9 @@ class NeuNavPill extends StatelessWidget {
             onTap: () => onChanged(0),
           ),
           _PillAction(
-            icon: Icons.graphic_eq,
-            selected: index == 1,
-            onTap: () => onChanged(1),
+            icon: Icons.tune,
+            selected: index == 3,
+            onTap: () => onChanged(3),
           ),
         ],
       ),
@@ -58,7 +63,7 @@ class NeumorphicPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: height,
-      padding: const EdgeInsets.symmetric(horizontal: 26),
+      padding: const EdgeInsets.symmetric(horizontal: 22),
       decoration: BoxDecoration(
         color: NeuColors.surface,
         borderRadius: BorderRadius.circular(height / 2),
@@ -86,11 +91,11 @@ class _PillAction extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: SizedBox(
-        width: 52,
+        width: 50,
         height: 52,
         child: Icon(
           icon,
-          size: 24,
+          size: 23,
           color: selected ? NeuColors.accent : NeuColors.textMuted,
         ),
       ),
@@ -111,15 +116,15 @@ class _HexCore extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: SizedBox(
-        width: 52,
-        height: 56,
+        width: 54,
+        height: 60,
         child: CustomPaint(
-          painter: _HexCorePainter(active: selected),
+          painter: _HexCorePainterColor(active: selected),
           child: Center(
             child: Icon(
               Icons.headphones,
-              size: 22,
-              color: selected ? NeuColors.textPrimary : NeuColors.textMuted,
+              size: 23,
+              color: selected ? NeuColors.background : NeuColors.textMuted,
             ),
           ),
         ),
@@ -128,10 +133,10 @@ class _HexCore extends StatelessWidget {
   }
 }
 
-class _HexCorePainter extends CustomPainter {
+class _HexCorePainterColor extends CustomPainter {
   final bool active;
 
-  _HexCorePainter({required this.active});
+  _HexCorePainterColor({required this.active});
 
   Path _path(Size size) {
     final cx = size.width / 2;
@@ -171,7 +176,7 @@ class _HexCorePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _HexCorePainter oldDelegate) =>
+  bool shouldRepaint(covariant _HexCorePainterColor oldDelegate) =>
       oldDelegate.active != active;
 }
 
@@ -196,20 +201,25 @@ class NeuGridButton extends StatelessWidget {
         ),
         child: Padding(
           padding: EdgeInsets.all(size * 0.26),
-          child: GridView.count(
-            crossAxisCount: 2,
-            mainAxisSpacing: size * 0.08,
-            crossAxisSpacing: size * 0.08,
-            physics: const NeverScrollableScrollPhysics(),
-            children: List.generate(
-              4,
-              (_) => Container(
-                decoration: BoxDecoration(
-                  color: NeuColors.textSecondary,
-                  borderRadius: BorderRadius.circular(2),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              for (var row = 0; row < 2; row++)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    for (var col = 0; col < 2; col++)
+                      Container(
+                        width: size * 0.17,
+                        height: size * 0.17,
+                        decoration: BoxDecoration(
+                          color: NeuColors.textSecondary,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                  ],
                 ),
-              ),
-            ),
+            ],
           ),
         ),
       ),

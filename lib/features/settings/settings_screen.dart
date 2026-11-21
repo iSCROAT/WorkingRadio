@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/neumorphic_theme.dart';
 import '../../core/widgets/neumorphic.dart';
 import '../radio/radio_service.dart';
+import '../stations/stations_screen.dart';
 import '../weather/weather_service.dart';
 import 'settings_provider.dart';
 
@@ -132,6 +133,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: 'Previsão do tempo',
                 subtitle: 'wttr.in — dados reais',
                 onTap: widget.onOpenWeather,
+              ),
+              _Item(
+                icon: Icons.public,
+                title: 'Estações do mundo',
+                subtitle:
+                    'Radio Browser · ${settings.city.isEmpty ? 'busca global' : settings.city}',
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => StationsScreen(
+                      onBack: () => Navigator.of(context).pop(),
+                    ),
+                  ),
+                ),
               ),
               _Item(
                 icon: Icons.notifications,

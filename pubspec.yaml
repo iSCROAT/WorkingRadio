@@ -1,7 +1,7 @@
 name: working_radio
-description: Working Radio — rádio online premium com neumorfismo (Flutter).
+description: Working Radio — rádio online premium global com neumorfismo (Flutter).
 publish_to: 'none'
-version: 2.0.0+1
+version: 3.0.0+2
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
@@ -14,6 +14,10 @@ dependencies:
   http: ^1.2.1
   shared_preferences: ^2.2.3
   provider: ^6.1.2
+  # v3 — rádios globais + mapa + geolocalização
+  geolocator: ^12.0.0
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
 
 dev_dependencies:
   flutter_test:

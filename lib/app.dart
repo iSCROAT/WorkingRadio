@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'core/theme/neumorphic_theme.dart';
+import 'features/location/location_service.dart';
 import 'features/radio/radio_service.dart';
 import 'features/settings/settings_provider.dart';
+import 'features/stations/station_service.dart';
 import 'features/weather/weather_service.dart';
 import 'main_shell.dart';
 
-/// Working Radio v2 — Flutter + Neumorfismo.
-/// Providers: rádio (just_audio), tempo (wttr.in), configurações (prefs).
+/// Working Radio v3 — Flutter + Neumorfismo.
+/// Providers: rádio (just_audio), estações globais (Radio Browser),
+/// localização (GPS), tempo (wttr.in) e configurações (prefs).
 class WorkingRadioApp extends StatelessWidget {
   const WorkingRadioApp({super.key});
 
@@ -17,7 +21,9 @@ class WorkingRadioApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => RadioService()),
         ChangeNotifierProvider(create: (_) => WeatherService()),
-        ChangeNotifierProvider(create: (_) => SettingsProvider()..load()),
+        ChangeNotifierProvider(create: (_) => StationService()),
+        ChangeNotifierProvider(create: (_) => LocationService()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
       ],
       child: MaterialApp(
         title: 'Working Radio',
@@ -38,6 +44,8 @@ class _Bootstrap extends StatefulWidget {
 }
 
 class _BootstrapState extends State<_Bootstrap> {
+  bool _ready = false;
+
   @override
   void initState() {
     super.initState();
@@ -47,12 +55,22 @@ class _BootstrapState extends State<_Bootstrap> {
       final weather = context.read<WeatherService>();
       await settings.load();
       await radio.setStream(settings.streamUrl);
+      if (!mounted) return;
+      setState(() => _ready = true);
       await weather.fetch(settings.city);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!_ready) {
+      return Scaffold(
+        backgroundColor: NeuColors.background,
+        body: const Center(
+          child: CircularProgressIndicator(color: NeuColors.accent),
+        ),
+      );
+    }
     return const MainShell();
   }
 }
