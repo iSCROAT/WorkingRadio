@@ -10,7 +10,21 @@ class WeatherService extends ChangeNotifier {
   bool loading = false;
   String? error;
 
+  String _lastCity = '';
+  DateTime? _lastFetch;
+
+  /// Recarrega apenas se os dados estiverem velhos (10 min) ou ausentes.
+  Future<void> refreshIfStale() async {
+    final stale = _lastFetch == null ||
+        DateTime.now().difference(_lastFetch!) > const Duration(minutes: 10);
+    if (stale && _lastCity.isNotEmpty) {
+      await fetch(_lastCity);
+    }
+  }
+
   Future<void> fetch(String city) async {
+    _lastCity = city;
+    _lastFetch = DateTime.now();
     loading = true;
     error = null;
     notifyListeners();

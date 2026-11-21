@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/neumorphic_theme.dart';
 import '../../core/widgets/hexagon.dart';
+import '../../core/widgets/nav_pill.dart';
 import '../../core/widgets/neumorphic.dart';
 import '../radio/radio_service.dart';
 import '../weather/weather_service.dart';
@@ -64,9 +65,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontSize: 12, color: NeuColors.textMuted)),
                     ],
                   ),
-                  NeumorphicButton(
-                    icon: Icons.more_vert,
-                    size: 44,
+                  NeuGridButton(
+                    size: 46,
                     onTap: widget.onOpenSettings,
                   ),
                 ],
