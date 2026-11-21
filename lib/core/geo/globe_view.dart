@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 
 import '../theme/neumorphic_theme.dart';
@@ -218,6 +216,3 @@ class _StationPin extends StatelessWidget {
     );
   }
 }
-
-/// Utilidades para gerar um "anel" de estações sem coordenadas.
-double randomLon(int seed) => math.sin(seed * 12.9898) * 78.233 % 360 - 180;
