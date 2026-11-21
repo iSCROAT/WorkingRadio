@@ -1,0 +1,50 @@
+# Codemagic — WorkingRadio (Kotlin nativo)
+# Workflow: build APK debug (artefato baixável) a cada push na main.
+# Docs: https://docs.codemagic.io/
+workflows:
+  android-debug-apk:
+    name: Android Debug APK
+    max_build_duration: 60
+    instance_type: mac_mini_m1
+    environment:
+      java: 17
+      groups:
+        - google-play-credentials
+    scripts:
+      - name: Gerar Gradle Wrapper (se ausente)
+        script: |
+          if [ ! -f gradlew ]; then
+            gradle wrapper --gradle-version 8.7
+          fi
+          chmod +x gradlew
+      - name: Build APK debug
+        script: |
+          ./gradlew assembleDebug --stacktrace
+      - name: Listar artefatos
+        script: |
+          find app/build/outputs -name "*.apk" -print
+    artifacts:
+      - app/build/outputs/apk/debug/*.apk
+    publishing:
+      email:
+        - iSCROAT@users.noreply.github.com
+      cancel_previous_builds: true
+
+  android-release-apk:
+    name: Android Release APK (manual)
+    max_build_duration: 60
+    instance_type: mac_mini_m1
+    environment:
+      java: 17
+    scripts:
+      - name: Gerar Gradle Wrapper (se ausente)
+        script: |
+          if [ ! -f gradlew ]; then
+            gradle wrapper --gradle-version 8.7
+          fi
+          chmod +x gradlew
+      - name: Build APK release (sem assinatura — para teste)
+        script: |
+          ./gradlew assembleRelease --stacktrace
+    artifacts:
+      - app/build/outputs/apk/release/*.apk

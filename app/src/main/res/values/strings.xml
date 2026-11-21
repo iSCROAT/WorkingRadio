@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Working Radio</string>
+    <string name="radio_live">Radio Ao Vivo</string>
+    <string name="weather_title">Previsão do Tempo</string>
+    <string name="settings_title">Configurações</string>
+</resources>
