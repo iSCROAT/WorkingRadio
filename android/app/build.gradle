@@ -35,5 +35,5 @@ android {
 }
 
 flutter {
-    source = '../lib'
+    // O plugin loader do Flutter resolve lib/ automaticamente a partir da raiz.
 }
