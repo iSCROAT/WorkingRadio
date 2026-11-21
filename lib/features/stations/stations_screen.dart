@@ -7,6 +7,7 @@ import '../location/location_service.dart';
 import '../radio/radio_service.dart';
 import 'station_model.dart';
 import 'station_service.dart';
+import '../globe/globe_screen.dart';
 import 'stations_map_screen.dart';
 
 /// TELA — Explorar rádios do mundo (Radio Browser).
@@ -43,6 +44,35 @@ class _StationsScreenState extends State<StationsScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  /// Lupa: busca por qualquer referência da estação.
+  /// Se o texto casar com um país/estado da base, filtra por local;
+  /// senão, busca por nome (a API já aceita trechos e tags).
+  Future<void> _submitSearch() async {
+    final stations = context.read<StationService>();
+    final text = _searchController.text.trim();
+    if (text.isEmpty) {
+      await stations.loadTopWorld();
+      return;
+    }
+
+    // 1) tenta casar com um país conhecido
+    final query = text.toLowerCase();
+    final byCode = stations.countries.where((c) => c.code.toLowerCase() == query);
+    final byName = stations.countries.where(
+        (c) => c.name.toLowerCase().contains(query) && query.length >= 3);
+    final country = byCode.isNotEmpty
+        ? byCode.first
+        : (byName.isNotEmpty ? byName.first : null);
+
+    if (country != null) {
+      await stations.search(countryCode: country.code, name: '');
+      return;
+    }
+
+    // 2) busca por nome da estação
+    await stations.search(name: text);
   }
 
   @override
@@ -85,29 +115,42 @@ class _StationsScreenState extends State<StationsScreen> {
                           ),
                         ),
                       ),
+                      const SizedBox(width: 8),
+                      NeumorphicButton(
+                        icon: Icons.language,
+                        size: 44,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                GlobeScreen(onBack: () => Navigator.pop(context)),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  NeumorphicTextField(
-                    controller: _searchController,
-                    hint: 'Buscar estação por nome...',
-                    icon: Icons.search,
+                  // LUPA — busca por nome, cidade, estado, país ou tag
+                  Row(
+                    children: [
+                      Expanded(
+                        child: NeumorphicTextField(
+                          controller: _searchController,
+                          hint: 'Nome, cidade, estado ou tag...',
+                          icon: Icons.search,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      NeumorphicButton(
+                        icon: Icons.search,
+                        size: 50,
+                        active: true,
+                        onTap: _submitSearch,
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Expanded(
-                        child: NeumorphicButton(
-                          icon: Icons.search,
-                          size: 44,
-                          onTap: () => stations.search(
-                            name: _searchController.text.trim(),
-                            countryCode: stations.filterCountryCode,
-                            state: stations.filterState,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
                       Expanded(
                         child: NeumorphicButton(
                           icon: Icons.near_me,

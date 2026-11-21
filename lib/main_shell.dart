@@ -3,13 +3,15 @@ import 'package:provider/provider.dart';
 
 import 'core/theme/neumorphic_theme.dart';
 import 'core/widgets/nav_pill.dart';
+import 'features/globe/globe_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/stations/stations_screen.dart';
 import 'features/weather/weather_screen.dart';
 import 'features/weather/weather_service.dart';
 
-/// Navegação principal v3 — 4 abas com pílula neumórfica inferior.
+/// Navegação principal v3 — 5 abas com pílula neumórfica do protótipo:
+/// Início (hexágono) · Explorar · Tempo · Globo · Ajustes.
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
 
@@ -36,11 +38,12 @@ class _MainShellState extends State<MainShell> {
         children: [
           HomeScreen(
             onOpenWeather: () => _go(2),
-            onOpenSettings: () => _go(3),
+            onOpenSettings: () => _go(4),
             onOpenStations: () => _go(1),
           ),
           StationsScreen(onBack: () => _go(0)),
           WeatherScreen(onBack: () => _go(0)),
+          GlobeScreen(onBack: () => _go(0)),
           SettingsScreen(
             onBack: () => _go(0),
             onOpenWeather: () => _go(2),

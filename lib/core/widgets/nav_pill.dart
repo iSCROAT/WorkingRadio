@@ -38,9 +38,14 @@ class NeuNavPill extends StatelessWidget {
             onTap: () => onChanged(0),
           ),
           _PillAction(
-            icon: Icons.tune,
+            icon: Icons.language,
             selected: index == 3,
             onTap: () => onChanged(3),
+          ),
+          _PillAction(
+            icon: Icons.tune,
+            selected: index == 4,
+            onTap: () => onChanged(4),
           ),
         ],
       ),
