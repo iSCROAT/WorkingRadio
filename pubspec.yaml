@@ -24,5 +24,10 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^4.0.0
 
+# geolocator_android 4.6.2 quebra com Flutter 3.24 (plugin usa `flutter.*`
+# em módulo de biblioteca). 4.6.1 é a última compatível.
+dependency_overrides:
+  geolocator_android: 4.6.1
+
 flutter:
   uses-material-design: true
