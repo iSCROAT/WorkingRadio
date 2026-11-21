@@ -2,6 +2,10 @@
 # Build APK debug (artefato) a cada push + Release por tag v*.
 name: Android CI/CD
 
+# Necessário para publicar a Release com o APK (tag v*)
+permissions:
+  contents: write
+
 on:
   push:
     branches: [main, 'arena/*']
