@@ -57,9 +57,9 @@ jobs:
         if: failure()
         run: |
           set +e
-          ERR=$(grep -iE "error:|FAILURE:|What went wrong|Caused by:|e: |Exception:" /tmp/build.log 2>/dev/null | head -n 12)
+          ERR=$(grep -n -A 14 -iE "What went wrong|error: |e: file|FAILURE: Build failed" /tmp/build.log 2>/dev/null | head -n 40)
           if [ -z "$ERR" ]; then
-            ERR=$(tail -n 25 /tmp/build.log 2>/dev/null)
+            ERR=$(tail -n 40 /tmp/build.log 2>/dev/null)
           fi
           # escapa % e quebras de linha para o comando ::error::
           ESC=$(printf '%s' "$ERR" | sed 's/%/%25/g' | sed ':a;N;$!ba;s/\n/%0A/g')
