@@ -43,6 +43,7 @@ Análise estática de JavaScript/Electron **não** precisa de motor nativo.
 
 ## Como o REA foi usado neste projeto
 
+### v1.0.0 — Protótipo "Heart Rate / Heart Limit" → Kotlin nativo
 1. **Análise visual do protótipo** — extração de tokens de design:
    - Paleta: fundo `#0B0C0F`, superfície `#1A1B21`, acento `#FF3B5C`
    - Formas: hexágono com gradiente radial + círculo central elevado
@@ -50,10 +51,29 @@ Análise estática de JavaScript/Electron **não** precisa de motor nativo.
 2. **Reconstrução** — os tokens viraram `ui/theme/Color.kt`, `HexagonShape.kt` e `BarChart.kt`
 3. **Adaptação de domínio** — Heart Rate → Radio Ao Vivo; Heart Limit → Previsão do Tempo
 
+### v2.0.0 — Neumorfismo (Flutter)
+1. **Reanálise do protótipo + especificação de neumorfismo** — tokens atualizados:
+   - Superfície unificada `#14161A` (fundo = elementos; profundidade via sombras duplas)
+   - Sombra clara `#2B2E35` (superior-esquerda) + sombra escura `#0A0B0D` (inferior-direita)
+   - Estados: convexo (elevado) ↔ côncavo (pressionado, `BlurStyle.inner`)
+   - Acento mantido `#FF3B5C` (identidade do protótipo)
+2. **Mapeamento para widgets Flutter** (`lib/core/widgets/neumorphic.dart`):
+   - Botões realistas → `NeumorphicButton` (convexo → côncavo ao pressionar)
+   - Cartões elevados → `NeumorphicCard` / `NeumorphicContainer`
+   - Campos físicos → `NeumorphicTextField` (côncavo)
+   - Ícones em relevo → botões circulares com sombra dupla
+   - Sliders/toggles táteis → `NeumorphicSlider` / `NeumorphicToggle`
+   - Hexágono do protótipo → `NeumorphicHexagon` (`canvas.drawShadow` duplo)
+3. **Validação futura via APK** — com o APK gerado pelo GitHub Actions:
+   ```bash
+   rea inspect-android-package app-debug.apk
+   rea decode-android-resources app-debug.apk
+   ```
+
 ## Comandos úteis no dia a dia
 
 ```bash
-# Inspecionar um APK (ex.: validar o APK gerado pelo Codemagic)
+# Inspecionar um APK (ex.: validar o APK gerado pelo GitHub Actions)
 rea inspect-android-package app-debug.apk
 rea decode-android-resources app-debug.apk
 

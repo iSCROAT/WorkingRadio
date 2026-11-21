@@ -1,107 +1,107 @@
 # Working Radio 📻
 
-**Rádio online premium — Kotlin nativo + Jetpack Compose (Android)**
-MVP v1.0.0 • Interface recriada a partir de protótipo via engenharia reversa visual (REA)
+**Rádio online premium — Flutter (Dart) + Neumorfismo**
+v2.0.0 • Android (iOS futuro) • CI/CD GitHub Actions
 
-![Kotlin](https://img.shields.io/badge/Kotlin-2.0.20-7F52FF?style=flat-square)
-![Android](https://img.shields.io/badge/Android-API%2026%2B-3DDC84?style=flat-square)
-![Compose](https://img.shields.io/badge/Jetpack%20Compose-Material3-4285F4?style=flat-square)
-![Player](https://img.shields.io/badge/Media3-ExoPlayer-FF3B5C?style=flat-square)
-![CI](https://img.shields.io/badge/Codemagic-APK%20Debug-46E0B0?style=flat-square)
+![Flutter](https://img.shields.io/badge/Flutter-3.24-02569B?style=flat-square)
+![Dart](https://img.shields.io/badge/Dart-3.5-0175C2?style=flat-square)
+![Android](https://img.shields.io/badge/Android-API%2021%2B-3DDC84?style=flat-square)
+![Player](https://img.shields.io/badge/just_audio-0.9-FF3B5C?style=flat-square)
+![CI](https://img.shields.io/badge/GitHub%20Actions-APK-46E0B0?style=flat-square)
 
 ---
 
 ## 📱 O que é
 
-O **Working Radio** é um aplicativo mobile de rádio online com visual premium dark,
-recriado fielmente a partir do protótipo de referência (telas "Heart Rate" / "Heart Limit"
-adaptadas para o universo de rádio + previsão do tempo).
+O **Working Radio** é um aplicativo mobile de rádio online com visual **neumórfico premium**,
+recriado a partir do protótipo de referência via engenharia reversa visual (REA) —
+agora em **Flutter** (1 código para Android + iOS futuro).
 
-### Telas do MVP
+### Telas da v2
 
-| Tela | Protótipo original | Adaptada para |
-|------|-------------------|---------------|
-| **Radio Ao Vivo** | Heart Rate (hexágono + 120 bpm + gráfico) | Player com hexágono, círculo central play/pause + frequência FM, gráfico de programação do dia |
-| **Previsão do Tempo** | Heart Limit (140 bpm + abas + notificações) | Card de temperatura ao vivo (wttr.in), abas Hoje/Semana, slider de volume, toggle de notificações |
-| **Configurações** | Back to settings | Lista de estações, tempo, notificações e sobre |
+| Tela | Conteúdo real |
+|------|---------------|
+| **Radio Ao Vivo** | Hexágono neumórfico + botão play convexo, stream configurável (just_audio), gráfico de **temperatura real por hora** |
+| **Previsão do Tempo** | Card elevado com temperatura real (wttr.in), abas Hoje/Semana, slider de volume, toggle persistido |
+| **Configurações** | Campo físico para URL do stream + cidade, notificações, sobre |
 
-### Funções (v1.0.0)
+### Princípio da v2: zero demonstrações falsas
 
-- ▶️ **Player real** com Media3/ExoPlayer — 3 estações de demonstração (streams públicos SomaFM)
-- 🌤️ **Previsão do tempo real** via [wttr.in](https://wttr.in) (gratuito, sem chave) — cidade, temperatura, umidade, vento, UV, próximas horas e 5 dias
-- 🎨 **Ícones vetoriais reais** (Material Icons) — nenhum emoji como ícone
-- 🧭 **Navegação** com bottom bar premium + back stack
-- 📦 **CI/CD Codemagic** — APK debug gerado automaticamente a cada push (artefato baixável)
+- ✅ Stream real configurável (padrão: SomaFM público — substitua pela URL oficial)
+- ✅ Tempo real via [wttr.in](https://wttr.in) (sem chave) — erro mostra estado real, nunca dado fake
+- ✅ Gráfico com dados reais da API
+- ✅ Configurações persistidas (SharedPreferences)
+
+### Neumorfismo
+
+Botões convexos que afundam ao tocar, cards flutuantes, campos côncavos,
+ícones em relevo e sliders/toggles táteis — tudo com sombras duplas
+(`#2B2E35` / `#0A0B0D`) sobre a superfície `#14161A`. Ver [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md).
 
 ---
 
 ## 🚀 Como rodar
 
 ### Pré-requisitos
-- Android Studio (Hedgehog+) com JDK 17
-- Android SDK API 26+ (emulador ou aparelho físico)
+- Flutter SDK 3.24+ ([flutter.dev](https://flutter.dev))
+- Android Studio com JDK 17
 
 ### Build local
 ```bash
-# gerar wrapper (uma vez, se ainda não existir)
-gradle wrapper --gradle-version 8.7
-
-./gradlew assembleDebug
-# APK em: app/build/outputs/apk/debug/app-debug.apk
+flutter pub get
+flutter build apk --debug
+# APK em: build/app/outputs/flutter-apk/app-debug.apk
 ```
 
-### CI/CD — Codemagic
-O workflow [`codemagic.yaml`](codemagic.yaml) (`android-debug-apk`) compila o APK debug
-a cada push e publica como **artefato baixável** no Codemagic.
-Para ativar: conecte este repositório em [codemagic.io](https://codemagic.io) — nenhum passo extra necessário.
+### CI/CD — GitHub Actions
+O workflow [`.github/workflows/android.yml`](.github/workflows/android.yml):
+- **A cada push**: compila o APK debug e publica como **artefato** (`app-debug`)
+- **A cada tag `v*`**: compila o APK release e publica como **Release** no GitHub
+
+Para baixar: aba **Actions** → build → **Artifacts** → `app-debug`.
+Ou em **Releases** (para tags `v*`).
 
 ---
 
 ## 🏗️ Arquitetura
 
 ```
-app/src/main/java/com/workingradio/
-├── MainActivity.kt            # Activity única + Compose
-├── WorkingRadioApp.kt         # Application (repositórios)
-├── data/
-│   ├── RadioRepository.kt     # Media3/ExoPlayer (streams)
-│   ├── WeatherRepository.kt   # wttr.in (OkHttp + JSON)
-│   └── model/                 # RadioStation, WeatherReport, mocks
-└── ui/
-    ├── theme/                 # Paleta extraída do protótipo
-    ├── components/            # Hexágono, gráfico de barras
-    ├── screens/               # Home, Weather, Settings
-    ├── viewmodel/             # RadioViewModel, WeatherViewModel
-    └── navigation/            # NavGraph (3 rotas)
+lib/
+├── main.dart                  # Entrada
+├── app.dart                   # Providers + MaterialApp + bootstrap
+├── main_shell.dart            # Bottom nav neumórfica (3 abas)
+├── core/
+│   ├── theme/                 # Tokens neumórficos
+│   └── widgets/               # Botões, cards, slider, toggle, hexágono
+└── features/
+    ├── radio/                 # just_audio (stream real)
+    ├── weather/               # wttr.in (tempo real)
+    ├── settings/              # SharedPreferences (URL, cidade, prefs)
+    └── home/                  # Tela principal
 ```
 
-**Stack:** Kotlin 2.0 • Jetpack Compose (Material3) • Media3 ExoPlayer • OkHttp •
-kotlinx.serialization • Navigation Compose • MVVM
+**Stack:** Flutter 3.24 • Dart 3.5 • just_audio • http • provider • shared_preferences
+
+> A v1 (Kotlin nativo) está arquivada em [`legacy/v1-kotlin/`](legacy/v1-kotlin/).
 
 ---
 
 ## 🔧 Engenharia reversa com REA
 
-O protótipo foi analisado com o [REA](https://github.com/morluto/rea) (*Reverse Engineer Anything*):
-extração de paleta, formas (hexágono/círculo), hierarquia e densidade visual — depois
-reconstruídos em Compose nativo. Guia completo em [`docs/REA-SETUP.md`](docs/REA-SETUP.md)
-e sistema de design em [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md).
-
-```bash
-# REA já instalado neste ambiente (rea@6.7.0)
-rea --help
-rea doctor
-```
+Protótipo analisado com o [REA](https://github.com/morluto/rea): extração de paleta,
+formas e hierarquia — reconstruídos em Flutter com neumorfismo.
+Guia completo em [`docs/REA-SETUP.md`](docs/REA-SETUP.md).
 
 ---
 
 ## 📋 Roadmap
 
-- [x] **v1.0.0** — MVP: player + tempo + 3 telas + CI Codemagic
-- [ ] **v1.1.0** — Favoritos persistentes (DataStore) + histórico de estações
-- [ ] **v1.2.0** — Stream oficial da rádio (trocar URL mock) + capa da estação
-- [ ] **v1.3.0** — Notificações de programas + widget de player
-- [ ] **v2.0.0** — iOS (Kotlin Multiplatform) + Play Store
+- [x] **v1.0.0** — Kotlin nativo (arquivado em `legacy/`)
+- [x] **v2.0.0** — Flutter + Neumorfismo + GitHub CI/CD + dados reais
+- [ ] **v2.1.0** — Stream oficial da rádio (URL real) + capa da estação
+- [ ] **v2.2.0** — Favoritos persistentes + histórico
+- [ ] **v2.3.0** — Notificações de programas + widget de player
+- [ ] **v3.0.0** — iOS (pasta `ios/` via `flutter create . --platforms=ios`) + Play Store
 
 Ver [`CHANGELOG.md`](CHANGELOG.md) para o histórico de versões.
 

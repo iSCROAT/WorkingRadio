@@ -1,7 +1,26 @@
 # Changelog — Working Radio
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
-Versionamento: `versionName` (semântico) + `versionCode` (incremental) em `app/build.gradle.kts`.
+Versionamento: `version` semântico em `pubspec.yaml` (v2+) / `versionName`+`versionCode` (v1).
+
+## [2.0.0] — 2026-11-21
+
+### Adicionado
+- **Migração de stack: Kotlin → Flutter (Dart)** — 1 código para Android + iOS futuro
+- **Neumorfismo dark**: botões convexos/côncavos, cards elevados, campos físicos,
+  ícones em relevo, slider e toggle táteis, hexágono com sombra dupla
+- **CI/CD GitHub Actions** (`.github/workflows/android.yml`): APK debug como artefato
+  a cada push + Release por tag `v*`
+- Stream real configurável (just_audio) — URL editável nas Configurações, persistida
+- Previsão do tempo real (wttr.in) com estados de erro reais (sem mock)
+- Gráfico de temperatura real por hora (substitui o gráfico fake da v1)
+- Navegação por abas com bottom bar neumórfica e transições
+- Ícones reais (Material Icons + launcher vetorial/PNG) — sem emojis
+
+### Removido
+- Demonstrações falsas (estações mock, programação fake, fallback mock de tempo)
+- CI/CD Codemagic (migrado para GitHub Actions)
+- App Kotlin v1 movido para `legacy/v1-kotlin/` (arquivo histórico)
 
 ## [1.0.0] — 2026-11-21
 
