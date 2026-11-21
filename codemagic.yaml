@@ -25,8 +25,8 @@ workflows:
       - app/build/outputs/apk/debug/*.apk
     publishing:
       email:
-        - iSCROAT@users.noreply.github.com
-      cancel_previous_builds: true
+        recipients:
+          - iSCROAT@users.noreply.github.com
 
   android-release-apk:
     name: Android Release APK (manual)
