@@ -86,7 +86,7 @@ class StationService extends ChangeNotifier {
     String name = '',
     String countryCode = '',
     String state = '',
-    int limit = 60,
+    int limit = 150,
   }) async {
     filterName = name;
     filterCountryCode = countryCode;
@@ -111,7 +111,7 @@ class StationService extends ChangeNotifier {
     required double lat,
     required double lng,
     double distanceKm = 100,
-    int limit = 60,
+    int limit = 150,
   }) async {
     filterCountryCode = '';
     filterState = '';
@@ -132,8 +132,26 @@ class StationService extends ChangeNotifier {
     await _runSearch('/json/stations/search', query);
   }
 
+  /// Catálogo ampliado do Brasil (entrada padrão brasileira).
+  /// Usa o país BR com o máximo que a API entrega por página e inclui
+  /// estações de todos os estados — o catálogo cresce com os filtros.
+  Future<void> loadBrazil({int limit = 200}) async {
+    await _runSearch('/json/stations/search', {
+      'countrycode': 'BR',
+      'hidebroken': 'true',
+      'order': 'votes',
+      'reverse': 'true',
+      'limit': '$limit',
+    });
+    filterCountryCode = 'BR';
+    filterState = '';
+    filterName = '';
+    nearLat = null;
+    nearLng = null;
+  }
+
   /// Top estações do mundo (entrada padrão, sem filtros).
-  Future<void> loadTopWorld({int limit = 60}) async {
+  Future<void> loadTopWorld({int limit = 150}) async {
     filterCountryCode = '';
     filterState = '';
     filterName = '';

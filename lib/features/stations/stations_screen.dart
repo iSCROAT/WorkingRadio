@@ -7,15 +7,12 @@ import '../location/location_service.dart';
 import '../radio/radio_service.dart';
 import 'station_model.dart';
 import 'station_service.dart';
-import '../globe/globe_screen.dart';
 import 'stations_map_screen.dart';
 
 /// TELA — Explorar rádios do mundo (Radio Browser).
 /// Busca por nome, país e estado; "perto de mim" usa GPS real.
 class StationsScreen extends StatefulWidget {
-  final VoidCallback onBack;
-
-  const StationsScreen({super.key, required this.onBack});
+  const StationsScreen({super.key});
 
   @override
   State<StationsScreen> createState() => _StationsScreenState();
@@ -35,7 +32,8 @@ class _StationsScreenState extends State<StationsScreen> {
       final stations = context.read<StationService>();
       await stations.loadCountries();
       if (stations.results.isEmpty) {
-        await stations.loadTopWorld();
+        // Entrada padrão: catálogo brasileiro ampliado
+        await stations.loadBrazil();
       }
     });
   }
@@ -53,7 +51,7 @@ class _StationsScreenState extends State<StationsScreen> {
     final stations = context.read<StationService>();
     final text = _searchController.text.trim();
     if (text.isEmpty) {
-      await stations.loadTopWorld();
+      await stations.loadBrazil();
       return;
     }
 
@@ -91,38 +89,33 @@ class _StationsScreenState extends State<StationsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      NeumorphicButton(
-                        icon: Icons.arrow_back,
-                        size: 44,
-                        onTap: widget.onBack,
-                      ),
-                      const SizedBox(width: 12),
                       const Expanded(
-                        child: Text('Explorar rádios',
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: NeuColors.textPrimary)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Explorar rádios',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: NeuColors.textPrimary,
+                                    height: 1.25)),
+                            SizedBox(height: 2),
+                            Text('60 mil+ estações no mundo',
+                                style: TextStyle(
+                                    fontSize: 12, color: NeuColors.textMuted)),
+                          ],
+                        ),
                       ),
+                      // UM acesso ao mapa de estações
                       NeumorphicButton(
-                        icon: Icons.public,
+                        icon: Icons.map,
                         size: 44,
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) =>
                                 StationsMapScreen(onBack: () => Navigator.pop(context)),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      NeumorphicButton(
-                        icon: Icons.language,
-                        size: 44,
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                GlobeScreen(onBack: () => Navigator.pop(context)),
                           ),
                         ),
                       ),
@@ -149,13 +142,34 @@ class _StationsScreenState extends State<StationsScreen> {
                     ],
                   ),
                   const SizedBox(height: 10),
+                  // Filtros rápidos: catálogo por região (Brasil ampliado / Mundo)
                   Row(
                     children: [
                       Expanded(
-                        child: NeumorphicButton(
+                        child: _QuickFilter(
+                          icon: Icons.flag,
+                          label: 'Brasil',
+                          selected: stations.filterCountryCode == 'BR',
+                          onTap: () => stations.loadBrazil(),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _QuickFilter(
+                          icon: Icons.public,
+                          label: 'Mundo',
+                          selected: stations.filterCountryCode.isEmpty &&
+                              stations.nearLat == null &&
+                              stations.results.isNotEmpty,
+                          onTap: () => stations.loadTopWorld(),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _QuickFilter(
                           icon: Icons.near_me,
-                          size: 44,
-                          active: stations.nearLat != null,
+                          label: 'Perto',
+                          selected: stations.nearLat != null,
                           onTap: () async {
                             await location.locate();
                             if (location.hasFix) {
@@ -174,21 +188,14 @@ class _StationsScreenState extends State<StationsScreen> {
                           },
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 8),
                       Expanded(
-                        child: NeumorphicButton(
+                        child: _QuickFilter(
                           icon: Icons.filter_alt,
-                          size: 44,
-                          active: stations.filterCountryCode.isNotEmpty,
+                          label: 'País',
+                          selected: stations.filterCountryCode.isNotEmpty &&
+                              stations.filterCountryCode != 'BR',
                           onTap: () => _openFilterSheet(context, stations),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: NeumorphicButton(
-                          icon: Icons.public,
-                          size: 44,
-                          onTap: () => stations.loadTopWorld(),
                         ),
                       ),
                     ],
@@ -262,7 +269,7 @@ class _StationsScreenState extends State<StationsScreen> {
       );
     }
     return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 110),
       itemCount: stations.results.length,
       separatorBuilder: (_, __) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
@@ -284,6 +291,58 @@ class _StationsScreenState extends State<StationsScreen> {
       builder: (sheetContext) {
         return _CountryFilterSheet(stations: stations);
       },
+    );
+  }
+}
+
+class _QuickFilter extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _QuickFilter({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 11),
+        decoration: BoxDecoration(
+          color: NeuColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: neuShadows(convex: !selected, depth: selected ? 3 : 5),
+          border: Border.all(
+            color: selected ? NeuColors.accent : Colors.transparent,
+            width: 1.2,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon,
+                size: 18,
+                color: selected ? NeuColors.accent : NeuColors.textMuted),
+            const SizedBox(height: 3),
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.normal,
+                color: selected ? NeuColors.accent : NeuColors.textMuted,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

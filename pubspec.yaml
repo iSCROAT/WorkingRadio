@@ -1,7 +1,7 @@
 name: working_radio
-description: Working Radio — rádio online premium global com neumorfismo (Flutter).
+description: Working Radio — rádio global premium com neumorfismo, globo interativo e catálogo ampliado (Flutter).
 publish_to: 'none'
-version: 3.0.0+2
+version: 4.0.0+3
 
 environment:
   sdk: '>=3.3.0 <4.0.0'

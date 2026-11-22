@@ -3,16 +3,16 @@ import 'package:provider/provider.dart';
 import '../../core/theme/neumorphic_theme.dart';
 import '../../core/widgets/neumorphic.dart';
 import '../radio/radio_service.dart';
+import '../location/location_service.dart';
 import '../settings/settings_provider.dart';
+import 'weather_location_sheet.dart';
 import 'weather_service.dart';
 
 /// TELA 2 — Previsão do Tempo (neumorfismo).
 /// Card elevado com temperatura real, abas Hoje/Semana,
 /// slider de volume e toggle de notificações — tudo tátil.
 class WeatherScreen extends StatefulWidget {
-  final VoidCallback onBack;
-
-  const WeatherScreen({super.key, required this.onBack});
+  const WeatherScreen({super.key});
 
   @override
   State<WeatherScreen> createState() => _WeatherScreenState();
@@ -20,6 +20,23 @@ class WeatherScreen extends StatefulWidget {
 
 class _WeatherScreenState extends State<WeatherScreen> {
   int _tab = 0; // 0 = Hoje, 1 = Semana
+
+  Future<void> _openLocationSheet() async {
+    final weather = context.read<WeatherService>();
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const WeatherLocationSheet(),
+    );
+    // Sincroniza o local escolhido com as Configurações (persistido).
+    if (!mounted) return;
+    final settings = context.read<SettingsProvider>();
+    final label = weather.displayLocation;
+    if (label.isNotEmpty && label != settings.city) {
+      await settings.saveCity(label);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,48 +48,52 @@ class _WeatherScreenState extends State<WeatherScreen> {
       backgroundColor: NeuColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 110),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  NeumorphicButton(
-                    icon: Icons.arrow_back,
-                    size: 44,
-                    onTap: widget.onBack,
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Previsão do Tempo',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: NeuColors.textPrimary,
+                                height: 1.2)),
+                        SizedBox(height: 2),
+                        Text('Dados reais via wttr.in',
+                            style: TextStyle(
+                                fontSize: 12, color: NeuColors.textMuted)),
+                      ],
+                    ),
                   ),
-                  const SizedBox(width: 12),
-                  const Text('Voltar para o início',
-                      style: TextStyle(
-                          fontSize: 13, color: NeuColors.textSecondary)),
-                  const Spacer(),
                   if (weather.loading)
-                    const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                          color: NeuColors.accent, strokeWidth: 2),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 10, right: 10),
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                            color: NeuColors.accent, strokeWidth: 2),
+                      ),
                     )
                   else
                     NeumorphicButton(
                       icon: Icons.refresh,
                       size: 44,
-                      onTap: () => weather.fetch(context.read<SettingsProvider>().city),
+                      onTap: () => weather.refreshIfStaleForce(),
                     ),
                 ],
               ),
-              const SizedBox(height: 20),
-              const Text('Previsão do\nTempo',
-                  style: TextStyle(
-                      fontSize: 34,
-                      fontWeight: FontWeight.bold,
-                      color: NeuColors.textPrimary,
-                      height: 1.15)),
-              const SizedBox(height: 6),
-              const Text('Dados reais via wttr.in — sem demonstrações',
-                  style: TextStyle(fontSize: 13, color: NeuColors.textSecondary)),
-              const SizedBox(height: 22),
+              const SizedBox(height: 16),
+              // LOCAL ESCOLHIDO — cidade, país ou GPS (um único acesso)
+              _LocationBar(onTap: _openLocationSheet),
+              const SizedBox(height: 16),
               if (weather.loading && report == null)
                 const SizedBox(
                   height: 180,
@@ -97,7 +118,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       NeumorphicButton(
                         icon: Icons.refresh,
                         size: 52,
-                        onTap: () => weather.fetch(context.read<SettingsProvider>().city),
+                        onTap: () => weather.refreshIfStaleForce(),
                       ),
                     ],
                   ),
@@ -293,6 +314,66 @@ class _WeatherScreenState extends State<WeatherScreen> {
       return Icons.thunderstorm;
     }
     return Icons.cloud;
+  }
+}
+
+
+/// Barra única de acesso ao seletor de local do tempo.
+/// Concentra o acesso (antes havia texto solto + refresh sem local).
+class _LocationBar extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _LocationBar({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final weather = context.watch<WeatherService>();
+    final location = context.watch<LocationService>();
+    final isGps = location.hasFix &&
+        weather.report?.city ==
+            (location.city.isEmpty ? 'Minha localização' : location.city);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: NeumorphicContainer(
+        borderRadius: 18,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Row(
+          children: [
+            Icon(isGps ? Icons.my_location : Icons.place,
+                size: 18, color: NeuColors.accent),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    weather.displayLocation.isEmpty
+                        ? 'Escolher local'
+                        : weather.displayLocation,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: NeuColors.textPrimary),
+                  ),
+                  const SizedBox(height: 1),
+                  Text(
+                    isGps ? 'Sua localização (GPS)' : 'Cidade, país ou GPS',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        fontSize: 11, color: NeuColors.textMuted),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.expand_more, size: 20, color: NeuColors.textMuted),
+          ],
+        ),
+      ),
+    );
   }
 }
 

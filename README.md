@@ -1,7 +1,7 @@
 # Working Radio 📻
 
 **Rádio online premium global — Flutter (Dart) + Neumorfismo**
-v3.0.0 • Android (iOS futuro) • CI/CD GitHub Actions
+v4.0.0 • Android (iOS futuro) • CI/CD GitHub Actions
 
 ![Flutter](https://img.shields.io/badge/Flutter-3.24-02569B?style=flat-square)
 ![Dart](https://img.shields.io/badge/Dart-3.5-0175C2?style=flat-square)
@@ -22,10 +22,10 @@ agora em **Flutter** (1 código para Android + iOS futuro).
 | Tela | Conteúdo real |
 |------|---------------|
 | **Radio Ao Vivo** | Hexágono neumórfico + botão play convexo, stream configurável (just_audio), gráfico de **temperatura real por hora** |
-| **Explorar rádios** | **60 mil+ estações do mundo** (Radio Browser): busca por nome, **país**, **estado** e **perto de mim** (GPS real) |
+| **Explorar rádios** | Catálogo ampliado: **Brasil (200 estações)**, **Mundo**, **Perto** (GPS) e **País**; lupa por nome/cidade/estado/tag |
 | **Mapa de estações** | Pontos reais das estações ativas (OpenStreetMap), sua posição, card com play e distância |
 | **Globo de estações** | Globo em meio-tom recriado do protótipo (ENG. REVERSA): arraste para girar, pinça p/ zoom, tap no ponto abre a estação com **local exato preservado** (coordenadas, país, codec, distância, tags) |
-| **Previsão do Tempo** | Card elevado com temperatura real (wttr.in), abas Hoje/Semana, slider de volume, toggle persistido |
+| **Previsão do Tempo** | Card com temperatura real (wttr.in), **local escolhível (GPS, cidade ou país)**, abas Hoje/Semana |
 | **Configurações** | Campo físico para URL do stream + cidade, estações, notificações, sobre |
 
 ### Princípio da v2: zero demonstrações falsas
@@ -111,6 +111,7 @@ Guia completo em [`docs/REA-SETUP.md`](docs/REA-SETUP.md).
 - [x] **v1.0.0** — Kotlin nativo (arquivado em `legacy/`)
 - [x] **v2.0.0** — Flutter + Neumorfismo + GitHub CI/CD + dados reais
 - [x] **v3.0.0** — Rádios globais (Radio Browser) + geolocalização + mapa de estações
+- [x] **v4.0.0** — Auditoria de UI (zero acessos duplicados) + local do tempo (GPS/cidade/país) + catálogo ampliado
 - [ ] **v3.1.0** — Favoritos persistentes + histórico de reprodução
 - [ ] **v3.2.0** — Filtro por gênero/tag + idioma + ordenação por qualidade
 - [ ] **v3.3.0** — Player em segundo plano (notificação) + widget de tela inicial

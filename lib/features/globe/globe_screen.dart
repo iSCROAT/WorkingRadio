@@ -15,9 +15,7 @@ import '../stations/station_service.dart';
 /// - Cada ponto é uma estação REAL com coordenadas (Radio Browser);
 /// - Tap no ponto abre o card com as informações da estação + local.
 class GlobeScreen extends StatefulWidget {
-  final VoidCallback onBack;
-
-  const GlobeScreen({super.key, required this.onBack});
+  const GlobeScreen({super.key});
 
   @override
   State<GlobeScreen> createState() => _GlobeScreenState();
@@ -62,18 +60,22 @@ class _GlobeScreenState extends State<GlobeScreen> {
               padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
               child: Row(
                 children: [
-                  NeumorphicButton(
-                    icon: Icons.arrow_back,
-                    size: 44,
-                    onTap: widget.onBack,
-                  ),
-                  const SizedBox(width: 12),
                   const Expanded(
-                    child: Text('Mapa global',
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: NeuColors.textPrimary)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Globo de estações',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: NeuColors.textPrimary,
+                                height: 1.2)),
+                        SizedBox(height: 2),
+                        Text('Arraste para girar · toque em um ponto',
+                            style: TextStyle(
+                                fontSize: 12, color: NeuColors.textMuted)),
+                      ],
+                    ),
                   ),
                   NeumorphicButton(
                     icon: Icons.my_location,

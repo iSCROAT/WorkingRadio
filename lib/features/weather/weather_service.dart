@@ -13,6 +13,19 @@ class WeatherService extends ChangeNotifier {
   String _lastCity = '';
   DateTime? _lastFetch;
 
+  /// Nome do local consultado atualmente (cidade, capital ou "Minha localização").
+  String get cityName => _lastCity;
+
+  /// Rótulo pronto para a UI: nome real da cidade quando disponível.
+  String get displayLocation {
+    final name = report?.city ?? '';
+    if (name.isEmpty) {
+      return _isCoordinates(_lastCity) ? 'Minha localização' : _lastCity;
+    }
+    return name;
+  }
+  DateTime? get lastFetch => _lastFetch;
+
   /// Recarrega apenas se os dados estiverem velhos (10 min) ou ausentes.
   Future<void> refreshIfStale() async {
     final stale = _lastFetch == null ||
@@ -22,14 +35,37 @@ class WeatherService extends ChangeNotifier {
     }
   }
 
-  Future<void> fetch(String city) async {
-    _lastCity = city;
+  /// Força recarga do local atual (botão atualizar).
+  Future<void> refreshIfStaleForce() async {
+    if (_lastCity.isEmpty) return;
+    if (_isCoordinates(_lastCity)) {
+      final parts = _lastCity.split(',');
+      await fetchByCoordinates(
+        double.parse(parts[0]),
+        double.parse(parts[1]),
+        cityName: report?.city ?? 'Minha localização',
+      );
+      return;
+    }
+    await fetch(_lastCity);
+  }
+
+  bool _isCoordinates(String value) =>
+      RegExp(r'^-?\d+(\.\d+)?,-?\d+(\.\d+)?$').hasMatch(value);
+
+  /// Previsão por cidade (nome ou "cidade,estado,país").
+  Future<void> fetch(String city, {String? label}) async {
+    final query = city.trim();
+    if (query.isEmpty) return;
+    _lastCity = (label ?? query);
     _lastFetch = DateTime.now();
     loading = true;
     error = null;
     notifyListeners();
     try {
-      final uri = Uri.parse('https://wttr.in/$city?format=j1');
+      final uri = Uri.parse(
+        'https://wttr.in/${Uri.encodeComponent(query)}?format=j1&lang=pt',
+      );
       final response = await http.get(uri).timeout(const Duration(seconds: 15));
       if (response.statusCode != 200) {
         throw Exception('HTTP ${response.statusCode}');
@@ -37,6 +73,47 @@ class WeatherService extends ChangeNotifier {
       report = _parse(jsonDecode(response.body));
     } catch (e) {
       error = 'Não foi possível carregar a previsão. Verifique sua conexão e tente novamente.';
+    }
+    loading = false;
+    notifyListeners();
+  }
+
+  /// Previsão por coordenadas reais (GPS) — o wttr.in aceita lat,lon.
+  Future<void> fetchByCoordinates(
+    double lat,
+    double lon, {
+    String cityName = 'Minha localização',
+  }) async {
+    _lastFetch = DateTime.now();
+    // Guarda as coordenadas (permite atualizar sem perder o ponto do GPS).
+    _lastCity = '$lat,$lon';
+    loading = true;
+    error = null;
+    notifyListeners();
+    try {
+      final uri = Uri.parse('https://wttr.in/$lat,$lon?format=j1&lang=pt');
+      final response = await http.get(uri).timeout(const Duration(seconds: 15));
+      if (response.statusCode != 200) {
+        throw Exception('HTTP ${response.statusCode}');
+      }
+      final parsed = _parse(jsonDecode(response.body));
+      report = WeatherReport(
+        city: cityName,
+        region: parsed.region,
+        country: parsed.country,
+        tempC: parsed.tempC,
+        feelsLikeC: parsed.feelsLikeC,
+        condition: parsed.condition,
+        conditionCode: parsed.conditionCode,
+        humidity: parsed.humidity,
+        windKmh: parsed.windKmh,
+        windDir: parsed.windDir,
+        uvIndex: parsed.uvIndex,
+        hourly: parsed.hourly,
+        daily: parsed.daily,
+      );
+    } catch (e) {
+      error = 'Não foi possível carregar a previsão da sua localização.';
     }
     loading = false;
     notifyListeners();

@@ -3,6 +3,37 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 Versionamento: `version` semântico em `pubspec.yaml` (v2+) / `versionName`+`versionCode` (v1).
 
+## [4.0.0] — 2026-11-21
+
+### Corrigido (auditoria de interface)
+- **Um único acesso por função**: removidos os caminhos duplicados —
+  Configurações apareciam no botão de grade **e** no atalho inferior do Início;
+  play aparecia no hexágono **e** no botão raio; estações/globo tinham entradas
+  simultâneas na tela Explorar, nas Configurações e na navegação
+- **Botões "voltar" redundantes removidos** das abas (Tempo, Explorar, Globo,
+  Configurações) — a pílula inferior já é a navegação; isso também eliminou
+  ícones soltos no topo das telas
+- **Textos reposicionados**: títulos de duas linhas com `height` correto,
+  subtítulos com espaçamento consistente, cabeçalhos alinhados à esquerda,
+  rótulos de seção com marcador, e padding inferior (110 px) para nada ficar
+  escondido atrás da pílula flutuante
+- Configurações reorganizadas em seções (RÁDIO · PREVISÃO · ATALHOS ·
+  PREFERÊNCIAS) com atalhos que levam cada um a uma aba diferente
+
+### Adicionado
+- **Local da previsão escolhível**: folha com três caminhos reais —
+  **minha localização (GPS)**, **cidade** digitada e **país** (45+ capitais
+  mapeadas). O local escolhido é exibido na barra de local e persistido
+- Barra de local única na tela Previsão (cidade atual + origem GPS/cidade)
+- **Catálogo ampliado**: entrada padrão no **Brasil (200 estações)**,
+  filtros rápidos Brasil / Mundo / Perto / País, buscas com limite 150 por
+  página e "perto de mim" com raio de 150 km
+- `loadBrazil()` e `fetchByCoordinates()` (wttr.in aceita lat,lon)
+
+### Alterado
+- `WeatherService`: rótulo do local (`displayLocation`), recarga forçada do
+  último local (cidade **ou** coordenadas) e parâmetro `lang=pt`
+
 ## [3.0.0] — 2026-11-21
 
 ### Adicionado

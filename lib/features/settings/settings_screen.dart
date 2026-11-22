@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../../core/theme/neumorphic_theme.dart';
 import '../../core/widgets/neumorphic.dart';
 import '../radio/radio_service.dart';
-import '../stations/stations_screen.dart';
 import '../weather/weather_service.dart';
 import 'settings_provider.dart';
 
@@ -11,13 +10,15 @@ import 'settings_provider.dart';
 /// Campos físicos para URL do stream e cidade — estrutura real,
 /// persistida em SharedPreferences.
 class SettingsScreen extends StatefulWidget {
-  final VoidCallback onBack;
   final VoidCallback onOpenWeather;
+  final VoidCallback onOpenStations;
+  final VoidCallback onOpenGlobe;
 
   const SettingsScreen({
     super.key,
-    required this.onBack,
     required this.onOpenWeather,
+    required this.onOpenStations,
+    required this.onOpenGlobe,
   });
 
   @override
@@ -69,28 +70,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
       backgroundColor: NeuColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 110),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  NeumorphicButton(
-                    icon: Icons.arrow_back,
-                    size: 44,
-                    onTap: widget.onBack,
-                  ),
-                  const SizedBox(width: 12),
-                  const Text('Configurações',
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: NeuColors.textPrimary)),
-                ],
-              ),
-              const SizedBox(height: 24),
-              const Text('URL do stream da rádio',
+              // Cabeçalho (aba — sem botão voltar redundante)
+              const Text('Configurações',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: NeuColors.textPrimary,
+                      height: 1.25)),
+              const SizedBox(height: 2),
+              const Text('Stream, local do tempo e preferências',
                   style: TextStyle(fontSize: 12, color: NeuColors.textMuted)),
+
+              const SizedBox(height: 22),
+              const _SectionLabel('RÁDIO'),
+              const SizedBox(height: 8),
+              const Text('URL do stream',
+                  style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: NeuColors.textSecondary)),
               const SizedBox(height: 8),
               NeumorphicTextField(
                 controller: _streamController,
@@ -100,18 +102,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 6),
               const Text(
                 'Padrão: stream público SomaFM. Substitua pela URL oficial da sua rádio.',
-                style: TextStyle(fontSize: 11, color: NeuColors.textMuted),
+                style: TextStyle(
+                    fontSize: 11, height: 1.4, color: NeuColors.textMuted),
               ),
-              const SizedBox(height: 20),
-              const Text('Cidade da previsão do tempo',
-                  style: TextStyle(fontSize: 12, color: NeuColors.textMuted)),
+
+              const SizedBox(height: 22),
+              const _SectionLabel('PREVISÃO DO TEMPO'),
+              const SizedBox(height: 8),
+              const Text('Cidade padrão',
+                  style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: NeuColors.textSecondary)),
               const SizedBox(height: 8),
               NeumorphicTextField(
                 controller: _cityController,
-                hint: 'Ex.: Parauna',
+                hint: 'Ex.: Paraúna',
                 icon: Icons.location_on,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 6),
+              const Text(
+                'Para usar país ou GPS, abra a tela Previsão e toque no local.',
+                style: TextStyle(
+                    fontSize: 11, height: 1.4, color: NeuColors.textMuted),
+              ),
+
+              const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 child: NeumorphicButton(
@@ -121,13 +137,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onTap: _save,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               const Center(
-                child: Text('Salvar configurações',
+                child: Text('Salvar alterações',
                     style: TextStyle(
                         fontSize: 12, color: NeuColors.textSecondary)),
               ),
+
               const SizedBox(height: 24),
+              const _SectionLabel('ATALHOS'),
+              const SizedBox(height: 8),
+              // Cada atalho leva a uma aba DIFERENTE (sem duplicar função)
               _Item(
                 icon: Icons.cloud,
                 title: 'Previsão do tempo',
@@ -137,16 +157,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _Item(
                 icon: Icons.public,
                 title: 'Estações do mundo',
-                subtitle:
-                    'Radio Browser · ${settings.city.isEmpty ? 'busca global' : settings.city}',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => StationsScreen(
-                      onBack: () => Navigator.of(context).pop(),
-                    ),
-                  ),
-                ),
+                subtitle: 'Radio Browser — 60 mil+ estações',
+                onTap: widget.onOpenStations,
               ),
+              _Item(
+                icon: Icons.language,
+                title: 'Globo de estações',
+                subtitle: 'Mapa-múndi interativo',
+                onTap: widget.onOpenGlobe,
+              ),
+
+              const SizedBox(height: 16),
+              const _SectionLabel('PREFERÊNCIAS'),
+              const SizedBox(height: 8),
               _Item(
                 icon: Icons.notifications,
                 title: 'Notificações',
@@ -155,18 +178,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   value: settings.notifications,
                   onChanged: settings.setNotifications,
                 ),
-                onTap: () {},
+                onTap: () => settings.setNotifications(!settings.notifications),
               ),
               _Item(
                 icon: Icons.info,
                 title: 'Sobre',
-                subtitle: 'Working Radio v2.0.0 — Flutter + Neumorfismo',
-                onTap: () {},
+                subtitle: 'Working Radio v4.0.0 — Flutter + Neumorfismo',
+                onTap: () => showAboutDialog(
+                  context: context,
+                  applicationName: 'Working Radio',
+                  applicationVersion: 'v4.0.0',
+                  applicationLegalese:
+                      'Rádios globais via Radio Browser · tempo via wttr.in',
+                ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               const Center(
                 child: Text(
-                  'Working Radio • Flutter • v2.0.0',
+                  'Working Radio • v4.0.0',
                   style: TextStyle(fontSize: 11, color: NeuColors.textMuted),
                 ),
               ),
@@ -174,6 +203,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  final String text;
+
+  const _SectionLabel(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 3,
+          height: 12,
+          decoration: BoxDecoration(
+            color: NeuColors.accent,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 7),
+        Text(
+          text,
+          style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.4,
+              color: NeuColors.textMuted),
+        ),
+      ],
     );
   }
 }

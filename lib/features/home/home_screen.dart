@@ -14,12 +14,14 @@ class HomeScreen extends StatefulWidget {
   final VoidCallback onOpenWeather;
   final VoidCallback onOpenSettings;
   final VoidCallback onOpenStations;
+  final VoidCallback onOpenGlobe;
 
   const HomeScreen({
     super.key,
     required this.onOpenWeather,
     required this.onOpenSettings,
     required this.onOpenStations,
+    required this.onOpenGlobe,
   });
 
   @override
@@ -61,7 +63,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w600,
+                              height: 1.25,
                               color: NeuColors.textPrimary)),
+                      SizedBox(height: 2),
                       Text('Stream configurável',
                           style: TextStyle(
                               fontSize: 12, color: NeuColors.textMuted)),
@@ -152,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 12),
               _HourlyChart(weather: weather),
               const Spacer(),
-              // Atalhos neumórficos
+              // Atalhos únicos (sem repetir ações já disponíveis)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -162,15 +166,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: widget.onOpenStations,
                   ),
                   NeumorphicButton(
-                    icon: Icons.bolt,
+                    icon: Icons.water_drop,
                     size: 56,
-                    active: radio.isPlaying,
-                    onTap: radio.toggle,
+                    onTap: widget.onOpenWeather,
                   ),
                   NeumorphicButton(
-                    icon: Icons.settings,
+                    icon: Icons.language,
                     size: 56,
-                    onTap: widget.onOpenSettings,
+                    onTap: widget.onOpenGlobe,
                   ),
                 ],
               ),

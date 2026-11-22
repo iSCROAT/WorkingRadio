@@ -10,8 +10,10 @@ import 'features/stations/stations_screen.dart';
 import 'features/weather/weather_screen.dart';
 import 'features/weather/weather_service.dart';
 
-/// Navegação principal v3 — 5 abas com pílula neumórfica do protótipo:
+/// Navegação principal v4 — 5 abas com pílula neumórfica do protótipo:
 /// Início (hexágono) · Explorar · Tempo · Globo · Ajustes.
+/// As telas são abas persistentes: NÃO têm botão "voltar" próprio
+/// (evita acesso duplicado e ícones soltos no topo).
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
 
@@ -40,13 +42,15 @@ class _MainShellState extends State<MainShell> {
             onOpenWeather: () => _go(2),
             onOpenSettings: () => _go(4),
             onOpenStations: () => _go(1),
+            onOpenGlobe: () => _go(3),
           ),
-          StationsScreen(onBack: () => _go(0)),
-          WeatherScreen(onBack: () => _go(0)),
-          GlobeScreen(onBack: () => _go(0)),
-          SettingsScreen(
-            onBack: () => _go(0),
+          const StationsScreen(),
+          const WeatherScreen(),
+          const GlobeScreen(),
+          const SettingsScreen(
             onOpenWeather: () => _go(2),
+            onOpenStations: () => _go(1),
+            onOpenGlobe: () => _go(3),
           ),
         ],
       ),
