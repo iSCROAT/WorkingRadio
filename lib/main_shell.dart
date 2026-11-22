@@ -47,7 +47,7 @@ class _MainShellState extends State<MainShell> {
           const StationsScreen(),
           const WeatherScreen(),
           const GlobeScreen(),
-          const SettingsScreen(
+          SettingsScreen(
             onOpenWeather: () => _go(2),
             onOpenStations: () => _go(1),
             onOpenGlobe: () => _go(3),
